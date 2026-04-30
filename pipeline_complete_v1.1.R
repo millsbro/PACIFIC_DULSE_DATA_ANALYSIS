@@ -28,7 +28,14 @@ dir.create(fig_dir, showWarnings = FALSE)
 
 # Helper function to save ggplot objects
 save_fig <- function(filename, plot, w=8, h=5){
-  ggsave(file.path(fig_dir, filename), plot, width=w, height=h, dpi=300)
+  ggsave(
+    file.path(fig_dir, filename),
+    plot = plot,
+    width = w,
+    height = h,
+    dpi = 300,
+    bg = "white"
+  )
 }
 
 
