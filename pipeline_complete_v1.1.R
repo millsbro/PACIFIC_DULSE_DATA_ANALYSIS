@@ -52,19 +52,6 @@ library(stringr)    # pattern detection
 library(ggrepel)
 library(grid)
 
-# ============================================================
-# GLOBAL PLOT THEME (FORCE WHITE BACKGROUND)
-# ============================================================
-
-theme_set(
-  theme_classic(base_size = 14) +
-    theme(
-      plot.background  = element_rect(fill = "white", color = NA),
-      panel.background = element_rect(fill = "white", color = NA),
-      legend.background = element_rect(fill = "white", color = NA)
-    )
-)
-
 
 # ============================================================
 # SECTION 1 — LOAD DATA
