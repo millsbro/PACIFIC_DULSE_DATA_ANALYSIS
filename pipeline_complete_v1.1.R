@@ -483,21 +483,66 @@ cat("\nPIPELINE COMPLETE v1.0\n")
 
 
 # ============================================================
-# SECTION 12 — MACROALGAE INDUSTRY TRENDS
+# SECTION 12 — MACROALGAE INDUSTRY TRENDS (FINAL)
 # ============================================================
+
+# -------------------------
+# LOAD + CLEAN
+# -------------------------
 
 trends <- read.csv("trends.csv")
 trends <- clean_names(trends)
 
-trends_long <- trends %>%
+# -------------------------
+# RENAME COLUMNS (EXACT MATCH)
+# -------------------------
+
+trends <- trends %>%
+  rename(
+    food        = `seaweed.food`,
+    agriculture = `x.seaweed.fertilizer`,
+    biofuel     = `x.algae.biofuel`,
+    cosmetics   = `x.seaweed.cosmetics`,
+    pharma      = `x.algae.pharmaceutical`
+  )
+
+# -------------------------
+# FORMAT TIME
+# -------------------------
+
+trends$time <- as.Date(trends$time)
+trends$year <- as.numeric(format(trends$time, "%Y"))
+
+# -------------------------
+# AGGREGATE TO YEARLY MEAN
+# -------------------------
+
+trends_yearly <- trends %>%
+  group_by(year) %>%
+  summarise(
+    across(food:pharma, mean, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# -------------------------
+# LONG FORMAT
+# -------------------------
+
+trends_long <- trends_yearly %>%
   pivot_longer(
     cols = -year,
     names_to = "sector",
     values_to = "interest"
   )
 
+# -------------------------
+# PLOT (SMOOTHED — FINAL)
+# -------------------------
+
 p <- ggplot(trends_long, aes(x = year, y = interest, color = sector)) +
-  geom_line(linewidth = 1.2) +
+  
+  geom_smooth(method = "loess", se = FALSE, linewidth = 1.5, span = 0.4) +
+  
   scale_color_manual(
     values = c(
       food = "black",
@@ -514,17 +559,23 @@ p <- ggplot(trends_long, aes(x = year, y = interest, color = sector)) +
       pharma = "Pharma"
     )
   ) +
+  
   labs(
     title = "Trends in Interest in Macroalgal Applications by Industry",
     x = "Year",
     y = "Relative Search Interest",
     color = ""
   ) +
+  
   theme_classic(base_size = 14) +
   theme(
     plot.title = element_text(hjust = 0.5),
     legend.position = "top"
   )
+
+# -------------------------
+# SAVE
+# -------------------------
 
 save_fig("macroalgae_trends.png", p)
 
