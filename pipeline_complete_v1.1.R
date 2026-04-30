@@ -486,7 +486,7 @@ cat("\nPIPELINE COMPLETE v1.0\n")
 # SECTION 12 — MACROALGAE INDUSTRY TRENDS
 # ============================================================
 
-trends <- read.csv("trends(1).csv")
+trends <- read.csv("trends.csv")
 trends <- clean_names(trends)
 
 trends_long <- trends %>%
