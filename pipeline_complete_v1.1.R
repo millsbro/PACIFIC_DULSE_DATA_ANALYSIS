@@ -528,11 +528,11 @@ pheatmap(
 
 
 # ============================================================
-# SECTION 10 — PEARSON CORRELATION (STABLE, MINIMAL FILTERING)
+# SECTION 10 — PEARSON CORRELATION (FINAL — STABLE)
 # ============================================================
 
 # -------------------------
-# BASE DATA
+# BASE DATA (ABIOTIC + MACRO + N)
 # -------------------------
 
 corr_base <- data %>%
@@ -552,7 +552,7 @@ corr_base <- data %>%
   )
 
 # -------------------------
-# BIOACTIVES
+# BIOACTIVES (INCLUDING SULF POLY)
 # -------------------------
 
 corr_bio <- bio %>%
@@ -568,7 +568,7 @@ corr_bio <- bio %>%
   )
 
 # -------------------------
-# AA PCA
+# AMINO ACID PCA (PC1)
 # -------------------------
 
 aa_scores <- as.data.frame(pca$x)
@@ -578,7 +578,7 @@ aa_scores <- aa_scores %>%
   select(month, aa_pc1 = PC1)
 
 # -------------------------
-# MERGE
+# MERGE EVERYTHING
 # -------------------------
 
 corr_data <- corr_base %>%
@@ -593,30 +593,21 @@ corr_numeric <- corr_data %>%
   select(where(is.numeric))
 
 # -------------------------
-# REMOVE ZERO VARIANCE ONLY
+# CORRELATION MATRIX
 # -------------------------
 
-mat <- as.matrix(corr_numeric)
-
-sd_ok <- apply(mat, 2, function(x) sd(x, na.rm = TRUE) > 0)
-mat <- mat[, sd_ok]
+corr_matrix <- cor(corr_numeric, use = "pairwise.complete.obs")
 
 # -------------------------
-# CORRELATION (ALLOW NA)
-# -------------------------
-
-corr_matrix <- cor(mat, use = "pairwise.complete.obs")
-
-# -------------------------
-# HEATMAP (HANDLE NA SAFELY)
+# HEATMAP (NO CLUSTERING)
 # -------------------------
 
 pheatmap(
   corr_matrix,
   filename = file.path(fig_dir, "pearson_heatmap.png"),
   main = "Pearson Correlation Matrix (Full System)",
-  clustering_distance_rows = "euclidean",
-  clustering_distance_cols = "euclidean",
+  cluster_rows = FALSE,
+  cluster_cols = FALSE,
   na_col = "white"
 )
 
@@ -624,20 +615,20 @@ pheatmap(
 # TARGET TESTS
 # -------------------------
 
-print(cor.test(mat[,"sulfated_polysaccharides_mggdw"],
-               mat[,"phenolics_mg100g"]))
+print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
+               corr_numeric$phenolics_mg100g))
 
-print(cor.test(mat[,"sulfated_polysaccharides_mggdw"],
-               mat[,"tac_mmolkg"]))
+print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
+               corr_numeric$tac_mmolkg))
 
-print(cor.test(mat[,"sulfated_polysaccharides_mggdw"],
-               mat[,"cn_ratio"]))
+print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
+               corr_numeric$cn_ratio))
 
-print(cor.test(mat[,"sulfated_polysaccharides_mggdw"],
-               mat[,"aa_pc1"]))
+print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
+               corr_numeric$aa_pc1))
 
-print(cor.test(mat[,"sulfated_polysaccharides_mggdw"],
-               mat[,"protein_."]))
+print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
+               corr_numeric$protein_.))
 
 
 # ============================================================
