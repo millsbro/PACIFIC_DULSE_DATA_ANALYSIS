@@ -528,11 +528,11 @@ pheatmap(
 
 
 # ============================================================
-# SECTION 10 — PEARSON CORRELATION (FINAL STABLE VERSION)
+# SECTION 10 — PEARSON CORRELATION (FINAL — BULLETPROOF)
 # ============================================================
 
 # -------------------------
-# BASE DATA (ABIOTIC + MACRO + N)
+# BASE DATA
 # -------------------------
 
 corr_base <- data %>%
@@ -552,7 +552,7 @@ corr_base <- data %>%
   )
 
 # -------------------------
-# BIOACTIVES (INCLUDING SULF POLY)
+# BIOACTIVES
 # -------------------------
 
 corr_bio <- bio %>%
@@ -568,7 +568,7 @@ corr_bio <- bio %>%
   )
 
 # -------------------------
-# AMINO ACID PCA (PC1)
+# AA PCA
 # -------------------------
 
 aa_scores <- as.data.frame(pca$x)
@@ -578,7 +578,7 @@ aa_scores <- aa_scores %>%
   select(month, aa_pc1 = PC1)
 
 # -------------------------
-# MERGE EVERYTHING
+# MERGE
 # -------------------------
 
 corr_data <- corr_base %>%
@@ -593,23 +593,29 @@ corr_numeric <- corr_data %>%
   select(where(is.numeric))
 
 # -------------------------
-# REMOVE ZERO-VARIANCE COLUMNS (FIXED)
+# REMOVE BAD COLUMNS (STEP 1: ZERO VARIANCE)
 # -------------------------
 
-corr_matrix_tmp <- as.matrix(corr_numeric)
+mat <- as.matrix(corr_numeric)
 
-valid_cols <- apply(corr_matrix_tmp, 2, function(x) sd(x, na.rm = TRUE) > 0)
-
-corr_matrix_tmp <- corr_matrix_tmp[, valid_cols]
-
-# -------------------------
-# CORRELATION MATRIX
-# -------------------------
-
-corr_matrix <- cor(corr_matrix_tmp, use = "pairwise.complete.obs")
+sd_ok <- apply(mat, 2, function(x) sd(x, na.rm = TRUE) > 0)
+mat <- mat[, sd_ok]
 
 # -------------------------
-# HEATMAP
+# CORRELATION
+# -------------------------
+
+corr_matrix <- cor(mat, use = "pairwise.complete.obs")
+
+# -------------------------
+# REMOVE BAD COLUMNS (STEP 2: NA CORRELATIONS)
+# -------------------------
+
+na_ok <- apply(corr_matrix, 2, function(x) all(is.finite(x)))
+corr_matrix <- corr_matrix[na_ok, na_ok]
+
+# -------------------------
+# HEATMAP (NOW GUARANTEED SAFE)
 # -------------------------
 
 pheatmap(
@@ -624,20 +630,20 @@ pheatmap(
 # TARGET TESTS
 # -------------------------
 
-print(cor.test(corr_matrix_tmp[,"sulfated_polysaccharides_mggdw"],
-               corr_matrix_tmp[,"phenolics_mg100g"]))
+print(cor.test(mat[,"sulfated_polysaccharides_mggdw"],
+               mat[,"phenolics_mg100g"]))
 
-print(cor.test(corr_matrix_tmp[,"sulfated_polysaccharides_mggdw"],
-               corr_matrix_tmp[,"tac_mmolkg"]))
+print(cor.test(mat[,"sulfated_polysaccharides_mggdw"],
+               mat[,"tac_mmolkg"]))
 
-print(cor.test(corr_matrix_tmp[,"sulfated_polysaccharides_mggdw"],
-               corr_matrix_tmp[,"cn_ratio"]))
+print(cor.test(mat[,"sulfated_polysaccharides_mggdw"],
+               mat[,"cn_ratio"]))
 
-print(cor.test(corr_matrix_tmp[,"sulfated_polysaccharides_mggdw"],
-               corr_matrix_tmp[,"aa_pc1"]))
+print(cor.test(mat[,"sulfated_polysaccharides_mggdw"],
+               mat[,"aa_pc1"]))
 
-print(cor.test(corr_matrix_tmp[,"sulfated_polysaccharides_mggdw"],
-               corr_matrix_tmp[,"protein_."]))
+print(cor.test(mat[,"sulfated_polysaccharides_mggdw"],
+               mat[,"protein_."]))
 
 
 # ============================================================
