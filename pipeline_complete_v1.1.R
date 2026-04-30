@@ -175,11 +175,8 @@ save_fig("macros_stacked.png",p)
 
 
 # ============================================================
-# SECTION 5 — AMINO ACIDS
+# SECTION 5 — AMINO ACIDS (UPDATED PCA)
 # ============================================================
-# Includes:
-# - Z-scored heatmap
-# - PCA
 
 aa <- data %>%
   select(month, contains("mgkg")) %>%
@@ -188,7 +185,6 @@ aa <- data %>%
 
 aa <- apply(aa,2,as.numeric)
 
-# Safe scaling function (prevents NA/Inf crashes)
 scale_safe <- function(x){
   s <- sd(x, na.rm=TRUE)
   if(is.na(s) | s == 0) return(rep(0,length(x)))
@@ -202,15 +198,39 @@ aa_scaled[is.infinite(aa_scaled)] <- 0
 pheatmap(aa_scaled,
          filename=file.path(fig_dir,"aa_heatmap.png"))
 
-pca <- prcomp(aa_scaled)
+# -------------------------
+# PCA (FIXED — BIPLOT)
+# -------------------------
+
+pca <- prcomp(aa_scaled, scale. = FALSE)
 
 scores <- as.data.frame(pca$x)
 scores$month <- rownames(scores)
 
-png(file.path(fig_dir,"aa_pca.png"),1000,800)
-plot(scores$PC1,scores$PC2,pch=19)
-text(scores$PC1,scores$PC2,labels=scores$month,pos=3)
-dev.off()
+loadings <- as.data.frame(pca$rotation)
+loadings$var <- rownames(loadings)
+
+var_exp <- round(100 * summary(pca)$importance[2, 1:2], 1)
+
+p <- ggplot() +
+  geom_point(data = scores, aes(PC1, PC2), size = 3) +
+  geom_text(data = scores, aes(PC1, PC2, label = month), vjust = -1) +
+  geom_segment(data = loadings,
+               aes(x = 0, y = 0, xend = PC1*3, yend = PC2*3),
+               arrow = arrow(length = unit(0.2,"cm")),
+               color = "red") +
+  geom_text(data = loadings,
+            aes(PC1*3, PC2*3, label = var),
+            color = "blue", size = 3) +
+  labs(
+    title = "Amino Acid PCA",
+    x = paste0("PC1 (", var_exp[1], "%)"),
+    y = paste0("PC2 (", var_exp[2], "%)")
+  ) +
+  theme_classic()
+
+save_fig("aa_pca.png", p)
+
 
 
 # ============================================================
@@ -235,9 +255,8 @@ save_fig("aa_eaa_neaa.png",p)
 
 
 # ============================================================
-# SECTION 7 — MINERALS
+# SECTION 7 — MINERALS (UPDATED PCA)
 # ============================================================
-# Same approach as amino acids
 
 mat <- minerals %>%
   column_to_rownames("month") %>%
@@ -252,24 +271,38 @@ mat_scaled[is.infinite(mat_scaled)] <- 0
 pheatmap(mat_scaled,
          filename=file.path(fig_dir,"mineral_heatmap.png"))
 
-pca <- prcomp(mat_scaled)
+# -------------------------
+# PCA (FIXED — BIPLOT)
+# -------------------------
+
+pca <- prcomp(mat_scaled, scale. = FALSE)
 
 scores <- as.data.frame(pca$x)
 scores$month <- rownames(scores)
 
-png(file.path(fig_dir,"mineral_pca.png"),1000,800)
-plot(scores$PC1,scores$PC2,pch=19)
-text(scores$PC1,scores$PC2,labels=scores$month,pos=3)
-dev.off()
+loadings <- as.data.frame(pca$rotation)
+loadings$var <- rownames(loadings)
 
+var_exp <- round(100 * summary(pca)$importance[2, 1:2], 1)
 
-# ============================================================
-# COMPLETE
-# ============================================================
+p <- ggplot() +
+  geom_point(data = scores, aes(PC1, PC2), size = 3) +
+  geom_text(data = scores, aes(PC1, PC2, label = month), vjust = -1) +
+  geom_segment(data = loadings,
+               aes(x = 0, y = 0, xend = PC1*3, yend = PC2*3),
+               arrow = arrow(length = unit(0.2,"cm")),
+               color = "red") +
+  geom_text(data = loadings,
+            aes(PC1*3, PC2*3, label = var),
+            color = "blue", size = 3) +
+  labs(
+    title = "Mineral PCA",
+    x = paste0("PC1 (", var_exp[1], "%)"),
+    y = paste0("PC2 (", var_exp[2], "%)")
+  ) +
+  theme_classic()
 
-cat("\nPIPELINE COMPLETE (ANNOTATED VERSION)\n")
-
-
+save_fig("mineral_pca.png", p)
 
 # ============================================================
 # SECTION 8 — MINERAL TIME SERIES (FIXED)
