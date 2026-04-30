@@ -473,10 +473,34 @@ plot_group <- function(vars, title){
     )
 }
 
-png(file.path(fig_dir, "bioactives_temporal.png"), width = 1000, height = 1200)
+# -------------------------
+# SULF POLY PANEL (NEW)
+# -------------------------
+
+plot_sulf <- function(){
+  df <- bio_scaled_df %>%
+    select(month, all_of(sulfpoly)) %>%
+    pivot_longer(-month, names_to="compound", values_to="z")
+
+  ggplot(df, aes(month, z, group = compound)) +
+    geom_line(linewidth = 1, color = "purple") +
+    geom_point(size = 2, color = "purple") +
+    labs(title = "Sulfated Polysaccharides", x = "", y = "Z-score") +
+    theme_classic(base_size = 12) +
+    theme(
+      plot.title = element_text(hjust = 0.5),
+      legend.position = "none"
+    )
+}
+
+# -------------------------
+# EXPORT PANEL FIGURE
+# -------------------------
+
+png(file.path(fig_dir, "bioactives_temporal.png"), width = 1000, height = 1400, bg = "white")
 
 grid::grid.newpage()
-pushViewport(grid::viewport(layout = grid::grid.layout(3,1)))
+grid::pushViewport(grid::viewport(layout = grid::grid.layout(4,1)))
 
 print(plot_group(vitamins, "Vitamins"),
       vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 1))
@@ -487,7 +511,14 @@ print(plot_group(pigments, "Pigments"),
 print(plot_group(antiox, "Antioxidants"),
       vp = grid::viewport(layout.pos.row = 3, layout.pos.col = 1))
 
+print(plot_sulf(),
+      vp = grid::viewport(layout.pos.row = 4, layout.pos.col = 1))
+
 dev.off()
+
+# -------------------------
+# HEATMAP (AUTO-INCLUDES SULF POLY)
+# -------------------------
 
 pheatmap(
   bio_scaled,
