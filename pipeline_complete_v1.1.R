@@ -42,7 +42,7 @@ library(pheatmap)   # heatmaps
 library(tidyr)      # pivoting
 library(tibble)     # rownames handling
 library(stringr)    # pattern detection
-install.packages("ggrepel")
+library(ggrepel)
 
 
 # ============================================================
@@ -180,7 +180,7 @@ save_fig("macros_stacked.png",p)
 # ============================================================
 
 aa <- data %>%
-  select(month, contains("mgkg")) %>%
+  select(month, ends_with("mgkg")) %>%
   column_to_rownames("month") %>%
   as.matrix()
 
@@ -199,13 +199,12 @@ aa_scaled[is.infinite(aa_scaled)] <- 0
 pheatmap(aa_scaled,
          filename=file.path(fig_dir,"aa_heatmap.png"))
 
-library(ggrepel)
 
 # ============================================================
 # PCA — CLEAN (TOP LOADINGS ONLY)
 # ============================================================
 
-pca <- prcomp(aa_scaled, center = TRUE, scale. = TRUE)
+pca <- prcomp(aa_scaled, center = FALSE, scale. = FALSE)
 
 scores <- as.data.frame(pca$x)
 scores$month <- rownames(scores)
@@ -307,13 +306,11 @@ mat_scaled[is.infinite(mat_scaled)] <- 0
 pheatmap(mat_scaled,
          filename=file.path(fig_dir,"mineral_heatmap.png"))
 
-library(ggrepel)
-
 # ============================================================
 # PCA — MINERALS (CLEAN)
 # ============================================================
 
-pca_m <- prcomp(min_scaled, center = TRUE, scale. = TRUE)
+pca_m <- prcomp(mat_scaled, center = FALSE, scale. = FALSE)
 
 scores_m <- as.data.frame(pca_m$x)
 scores_m$month <- rownames(scores_m)
