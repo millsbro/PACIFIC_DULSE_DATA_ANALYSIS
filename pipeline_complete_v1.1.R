@@ -135,8 +135,12 @@ plot_abiotic <- function(df, var, ylab, title, fname){
     geom_hline(yintercept=m, linetype="dashed")+
     scale_color_manual(values=c("red","blue"))+
     labs(title=title, y=ylab, x="Month")+
-    theme_minimal(base_size=14)+
-    theme(plot.title=element_text(hjust=0.5))
+    theme_classic(base_size=14)+
+    theme(
+      plot.title = element_text(hjust=0.5),
+      panel.background = element_rect(fill = "white", color = NA),
+      plot.background  = element_rect(fill = "white", color = NA)
+    )
 
   # Save
   save_fig(fname,p)
