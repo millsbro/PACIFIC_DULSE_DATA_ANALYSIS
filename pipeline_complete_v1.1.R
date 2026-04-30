@@ -201,11 +201,11 @@ pheatmap(aa_scaled,
 
 library(ggrepel)
 
-# -------------------------
-# PCA (CLEAN BIPLOT)
-# -------------------------
+# ============================================================
+# PCA — CLEAN (TOP LOADINGS ONLY)
+# ============================================================
 
-pca <- prcomp(mat_scaled)   # or aa_scaled in AA section
+pca <- prcomp(aa_scaled, center = TRUE, scale. = TRUE)
 
 scores <- as.data.frame(pca$x)
 scores$month <- rownames(scores)
@@ -213,69 +213,56 @@ scores$month <- rownames(scores)
 loadings <- as.data.frame(pca$rotation)
 loadings$var <- rownames(loadings)
 
-# variance explained
-var_exp <- round(100 * summary(pca)$importance[2, 1:2], 1)
-
 # -------------------------
-# SMART ARROW SCALING
+# SELECT TOP CONTRIBUTORS
 # -------------------------
 
-arrow_scale <- min(
-  (max(scores$PC1) - min(scores$PC1)) /
-    (max(loadings$PC1) - min(loadings$PC1)),
-  (max(scores$PC2) - min(scores$PC2)) /
-    (max(loadings$PC2) - min(loadings$PC2))
-) * 0.7
-
-loadings$PC1s <- loadings$PC1 * arrow_scale
-loadings$PC2s <- loadings$PC2 * arrow_scale
-
-# -------------------------
-# FILTER TOP VARIABLES (REDUCES CLUTTER)
-# -------------------------
+top_n <- 8
 
 loadings$importance <- abs(loadings$PC1) + abs(loadings$PC2)
 
-top_loadings <- loadings %>%
-  arrange(desc(importance)) %>%
-  slice(1:8)   # adjust (6–10 is sweet spot)
+loadings_top <- loadings %>%
+    arrange(desc(importance)) %>%
+    slice(1:top_n)
+
+# -------------------------
+# SCALE ARROWS
+# -------------------------
+
+arrow_scale <- 3
 
 # -------------------------
 # PLOT
 # -------------------------
 
-p <- ggplot() +
-  
-  geom_point(data = scores,
-             aes(PC1, PC2),
-             size = 3,
-             color = "black") +
-  
-  geom_text(data = scores,
-            aes(PC1, PC2, label = month),
-            vjust = -1) +
-  
-  geom_segment(data = top_loadings,
-               aes(x = 0, y = 0,
-                   xend = PC1s, yend = PC2s),
-               arrow = arrow(length = unit(0.25, "cm")),
-               color = "red",
-               linewidth = 0.8) +
-  
-  geom_text_repel(data = top_loadings,
-                  aes(x = PC1s, y = PC2s, label = var),
-                  color = "blue",
-                  size = 3,
-                  max.overlaps = 20) +
-  
-  labs(
-    title = "PCA",
-    x = paste0("PC1 (", var_exp[1], "%)"),
-    y = paste0("PC2 (", var_exp[2], "%)")
-  ) +
-  
-  theme_classic(base_size = 14) +
-  theme(plot.title = element_text(hjust = 0.5))
+p <- ggplot(scores, aes(x = PC1, y = PC2)) +
+    geom_point(size = 3, color = "black") +
+    geom_text_repel(aes(label = month), size = 4) +
+
+    geom_segment(
+        data = loadings_top,
+        aes(x = 0, y = 0,
+            xend = PC1 * arrow_scale,
+            yend = PC2 * arrow_scale),
+        arrow = arrow(length = unit(0.2, "cm")),
+        color = "red"
+    ) +
+
+    geom_text_repel(
+        data = loadings_top,
+        aes(x = PC1 * arrow_scale,
+            y = PC2 * arrow_scale,
+            label = var),
+        color = "blue",
+        size = 4
+    ) +
+
+    theme_minimal() +
+    labs(
+        title = "Amino Acid PCA",
+        x = paste0("PC1 (", round(summary(pca)$importance[2,1]*100,1), "%)"),
+        y = paste0("PC2 (", round(summary(pca)$importance[2,2]*100,1), "%)")
+    )
 
 
 save_fig("aa_pca.png", p)
@@ -322,84 +309,70 @@ pheatmap(mat_scaled,
 
 library(ggrepel)
 
-# -------------------------
-# PCA (CLEAN BIPLOT)
-# -------------------------
+# ============================================================
+# PCA — MINERALS (CLEAN)
+# ============================================================
 
-pca <- prcomp(mat_scaled)   # or aa_scaled in AA section
+pca_m <- prcomp(min_scaled, center = TRUE, scale. = TRUE)
 
-scores <- as.data.frame(pca$x)
-scores$month <- rownames(scores)
+scores_m <- as.data.frame(pca_m$x)
+scores_m$month <- rownames(scores_m)
 
-loadings <- as.data.frame(pca$rotation)
-loadings$var <- rownames(loadings)
-
-# variance explained
-var_exp <- round(100 * summary(pca)$importance[2, 1:2], 1)
+loadings_m <- as.data.frame(pca_m$rotation)
+loadings_m$var <- rownames(loadings_m)
 
 # -------------------------
-# SMART ARROW SCALING
+# SELECT TOP CONTRIBUTORS
 # -------------------------
 
-arrow_scale <- min(
-  (max(scores$PC1) - min(scores$PC1)) /
-    (max(loadings$PC1) - min(loadings$PC1)),
-  (max(scores$PC2) - min(scores$PC2)) /
-    (max(loadings$PC2) - min(loadings$PC2))
-) * 0.7
+top_n <- 8
 
-loadings$PC1s <- loadings$PC1 * arrow_scale
-loadings$PC2s <- loadings$PC2 * arrow_scale
+loadings_m$importance <- abs(loadings_m$PC1) + abs(loadings_m$PC2)
+
+loadings_top_m <- loadings_m %>%
+    arrange(desc(importance)) %>%
+    slice(1:top_n)
 
 # -------------------------
-# FILTER TOP VARIABLES (REDUCES CLUTTER)
+# SCALE ARROWS
 # -------------------------
 
-loadings$importance <- abs(loadings$PC1) + abs(loadings$PC2)
-
-top_loadings <- loadings %>%
-  arrange(desc(importance)) %>%
-  slice(1:8)   # adjust (6–10 is sweet spot)
+arrow_scale <- 3
 
 # -------------------------
 # PLOT
 # -------------------------
 
-p <- ggplot() +
-  
-  geom_point(data = scores,
-             aes(PC1, PC2),
-             size = 3,
-             color = "black") +
-  
-  geom_text(data = scores,
-            aes(PC1, PC2, label = month),
-            vjust = -1) +
-  
-  geom_segment(data = top_loadings,
-               aes(x = 0, y = 0,
-                   xend = PC1s, yend = PC2s),
-               arrow = arrow(length = unit(0.25, "cm")),
-               color = "red",
-               linewidth = 0.8) +
-  
-  geom_text_repel(data = top_loadings,
-                  aes(x = PC1s, y = PC2s, label = var),
-                  color = "blue",
-                  size = 3,
-                  max.overlaps = 20) +
-  
-  labs(
-    title = "PCA",
-    x = paste0("PC1 (", var_exp[1], "%)"),
-    y = paste0("PC2 (", var_exp[2], "%)")
-  ) +
-  
-  theme_classic(base_size = 14) +
-  theme(plot.title = element_text(hjust = 0.5))
+p_m <- ggplot(scores_m, aes(x = PC1, y = PC2)) +
+    geom_point(size = 3, color = "black") +
+    geom_text_repel(aes(label = month), size = 4) +
 
+    geom_segment(
+        data = loadings_top_m,
+        aes(x = 0, y = 0,
+            xend = PC1 * arrow_scale,
+            yend = PC2 * arrow_scale),
+        arrow = arrow(length = unit(0.2, "cm")),
+        color = "red"
+    ) +
 
-save_fig("mineral_pca.png", p)
+    geom_text_repel(
+        data = loadings_top_m,
+        aes(x = PC1 * arrow_scale,
+            y = PC2 * arrow_scale,
+            label = var),
+        color = "blue",
+        size = 4
+    ) +
+
+    theme_minimal() +
+    labs(
+        title = "Mineral PCA",
+        x = paste0("PC1 (", round(summary(pca_m)$importance[2,1]*100,1), "%)"),
+        y = paste0("PC2 (", round(summary(pca_m)$importance[2,2]*100,1), "%)")
+    )
+
+save_fig("mineral_pca.png", p_m)
 
 # ============================================================
 # SECTION 8 — MINERAL TIME SERIES (FIXED)
