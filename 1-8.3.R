@@ -50,6 +50,7 @@ library(stringr)    # pattern detection
 
 # Toggle between datasets
 mode <- "monthly"
+#mode <- "seasonal"
 
 # Load datasets
 data <- read.csv(ifelse(mode=="monthly","MONTHLY.csv","SEASONAL.csv"))
@@ -261,19 +262,6 @@ png(file.path(fig_dir,"mineral_pca.png"),1000,800)
 plot(scores$PC1,scores$PC2,pch=19)
 text(scores$PC1,scores$PC2,labels=scores$month,pos=3)
 dev.off()
-
-
-# ============================================================
-# COMPLETE
-# ============================================================
-
-cat("\nPIPELINE COMPLETE (ANNOTATED VERSION)\n")
-
-
-
-# ============================================================
-# SECTION 8 — MINERAL TIME SERIES (FIXED)
-# ============================================================
 
 mineral_numeric <- minerals %>%
   select(-month) %>%
