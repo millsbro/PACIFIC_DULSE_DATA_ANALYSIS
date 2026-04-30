@@ -620,14 +620,15 @@ print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
 
 
 # ============================================================
-# SECTION 11 — TOTAL AA vs C:N (FINAL — WORKING)
+# SECTION 11 — FAA vs C:N (FINAL — COMPLETE)
 # ============================================================
 
 # -------------------------
-# IDENTIFY AA COLUMNS
+# IDENTIFY AA COLUMNS (AA ONLY)
 # -------------------------
 
-aa_cols <- names(data)[grepl("_mgkg$", names(data))]
+aa_cols <- names(data)[grepl("_mgkg$", names(data)) & 
+                       !grepl("^(ca|fe|zn|mg|na|k|p|s|mn|cu|mo|b|as|cr|cd|co|ni|pb)_", names(data))]
 
 # -------------------------
 # CALCULATE TOTAL AA
@@ -640,37 +641,55 @@ total_aa <- rowSums(data[, aa_cols], na.rm = TRUE)
 # -------------------------
 
 plot_df <- data.frame(
-  total_aa = total_aa,
-  cn       = data$cn_ratio
+  faa = total_aa,
+  cn  = data$cn_ratio
 )
 
-# -------------------------
-# REMOVE NA (SAFETY)
-# -------------------------
-
 plot_df <- na.omit(plot_df)
-
-# -------------------------
-# PLOT
-# -------------------------
-
-p <- ggplot(plot_df, aes(x = cn, y = total_aa)) +
-  geom_point(size = 3) +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_classic() +
-  labs(
-    title = "Total Amino Acids vs C:N Ratio",
-    x = "C:N Ratio",
-    y = "Total Amino Acids (mg/kg)"
-  )
-
-save_fig("totalAA_vs_cn.png", p)
 
 # -------------------------
 # CORRELATION
 # -------------------------
 
-print(cor.test(plot_df$total_aa, plot_df$cn))
+cor_res <- cor.test(plot_df$faa, plot_df$cn)
+
+r_val <- round(cor_res$estimate, 2)
+p_val <- round(cor_res$p.value, 3)
+
+# -------------------------
+# PLOT
+# -------------------------
+
+p <- ggplot(plot_df, aes(x = cn, y = faa)) +
+  geom_point(size = 3, color = "black") +
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +
+  annotate(
+    "text",
+    x = max(plot_df$cn),
+    y = max(plot_df$faa),
+    label = paste0("r = ", r_val, "\np = ", p_val),
+    hjust = 1,
+    vjust = 1,
+    size = 5
+  ) +
+  theme_classic(base_size = 14) +
+  labs(
+    title = "FAA vs C:N",
+    x = "C:N ratio",
+    y = "Free Amino Acids (mg/kg)"
+  )
+
+# -------------------------
+# SAVE
+# -------------------------
+
+save_fig("faa_vs_cn_final.png", p)
+
+# -------------------------
+# PRINT RESULT
+# -------------------------
+
+print(cor_res)
 
 
 # ============================================================
