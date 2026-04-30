@@ -528,7 +528,7 @@ pheatmap(
 
 
 # ============================================================
-# SECTION 10 — PEARSON CORRELATION (FINAL — STABLE)
+# SECTION 10 — PEARSON CORRELATION (CLEAN + STABLE)
 # ============================================================
 
 # -------------------------
@@ -599,7 +599,7 @@ corr_numeric <- corr_data %>%
 corr_matrix <- cor(corr_numeric, use = "pairwise.complete.obs")
 
 # -------------------------
-# HEATMAP (NO CLUSTERING)
+# HEATMAP (NO CLUSTERING = NO CRASH)
 # -------------------------
 
 pheatmap(
@@ -612,23 +612,11 @@ pheatmap(
 )
 
 # -------------------------
-# TARGET TESTS
+# OPTIONAL: SINGLE SAFE CHECK
 # -------------------------
 
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$phenolics_mg100g))
-
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$tac_mmolkg))
-
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
                corr_numeric$cn_ratio))
-
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$aa_pc1))
-
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$protein_.))
 
 
 # ============================================================
