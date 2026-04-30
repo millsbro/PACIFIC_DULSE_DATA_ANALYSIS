@@ -528,7 +528,7 @@ pheatmap(
 
 
 # ============================================================
-# SECTION 10 — PEARSON CORRELATION (FINAL — BULLETPROOF)
+# SECTION 10 — PEARSON CORRELATION (STABLE, MINIMAL FILTERING)
 # ============================================================
 
 # -------------------------
@@ -593,7 +593,7 @@ corr_numeric <- corr_data %>%
   select(where(is.numeric))
 
 # -------------------------
-# REMOVE BAD COLUMNS (STEP 1: ZERO VARIANCE)
+# REMOVE ZERO VARIANCE ONLY
 # -------------------------
 
 mat <- as.matrix(corr_numeric)
@@ -602,20 +602,13 @@ sd_ok <- apply(mat, 2, function(x) sd(x, na.rm = TRUE) > 0)
 mat <- mat[, sd_ok]
 
 # -------------------------
-# CORRELATION
+# CORRELATION (ALLOW NA)
 # -------------------------
 
 corr_matrix <- cor(mat, use = "pairwise.complete.obs")
 
 # -------------------------
-# REMOVE BAD COLUMNS (STEP 2: NA CORRELATIONS)
-# -------------------------
-
-na_ok <- apply(corr_matrix, 2, function(x) all(is.finite(x)))
-corr_matrix <- corr_matrix[na_ok, na_ok]
-
-# -------------------------
-# HEATMAP (NOW GUARANTEED SAFE)
+# HEATMAP (HANDLE NA SAFELY)
 # -------------------------
 
 pheatmap(
@@ -623,7 +616,8 @@ pheatmap(
   filename = file.path(fig_dir, "pearson_heatmap.png"),
   main = "Pearson Correlation Matrix (Full System)",
   clustering_distance_rows = "euclidean",
-  clustering_distance_cols = "euclidean"
+  clustering_distance_cols = "euclidean",
+  na_col = "white"
 )
 
 # -------------------------
