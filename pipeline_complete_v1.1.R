@@ -42,6 +42,7 @@ library(pheatmap)   # heatmaps
 library(tidyr)      # pivoting
 library(tibble)     # rownames handling
 library(stringr)    # pattern detection
+install.packages("ggrepel")
 
 
 # ============================================================
