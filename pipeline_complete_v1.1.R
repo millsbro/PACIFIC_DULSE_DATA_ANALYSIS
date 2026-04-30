@@ -198,11 +198,13 @@ aa_scaled[is.infinite(aa_scaled)] <- 0
 pheatmap(aa_scaled,
          filename=file.path(fig_dir,"aa_heatmap.png"))
 
+library(ggrepel)
+
 # -------------------------
-# PCA (FIXED — BIPLOT)
+# PCA (CLEAN BIPLOT)
 # -------------------------
 
-pca <- prcomp(aa_scaled, scale. = FALSE)
+pca <- prcomp(mat_scaled)   # or aa_scaled in AA section
 
 scores <- as.data.frame(pca$x)
 scores$month <- rownames(scores)
@@ -210,24 +212,70 @@ scores$month <- rownames(scores)
 loadings <- as.data.frame(pca$rotation)
 loadings$var <- rownames(loadings)
 
+# variance explained
 var_exp <- round(100 * summary(pca)$importance[2, 1:2], 1)
 
+# -------------------------
+# SMART ARROW SCALING
+# -------------------------
+
+arrow_scale <- min(
+  (max(scores$PC1) - min(scores$PC1)) /
+    (max(loadings$PC1) - min(loadings$PC1)),
+  (max(scores$PC2) - min(scores$PC2)) /
+    (max(loadings$PC2) - min(loadings$PC2))
+) * 0.7
+
+loadings$PC1s <- loadings$PC1 * arrow_scale
+loadings$PC2s <- loadings$PC2 * arrow_scale
+
+# -------------------------
+# FILTER TOP VARIABLES (REDUCES CLUTTER)
+# -------------------------
+
+loadings$importance <- abs(loadings$PC1) + abs(loadings$PC2)
+
+top_loadings <- loadings %>%
+  arrange(desc(importance)) %>%
+  slice(1:8)   # adjust (6–10 is sweet spot)
+
+# -------------------------
+# PLOT
+# -------------------------
+
 p <- ggplot() +
-  geom_point(data = scores, aes(PC1, PC2), size = 3) +
-  geom_text(data = scores, aes(PC1, PC2, label = month), vjust = -1) +
-  geom_segment(data = loadings,
-               aes(x = 0, y = 0, xend = PC1*3, yend = PC2*3),
-               arrow = arrow(length = unit(0.2,"cm")),
-               color = "red") +
-  geom_text(data = loadings,
-            aes(PC1*3, PC2*3, label = var),
-            color = "blue", size = 3) +
+  
+  geom_point(data = scores,
+             aes(PC1, PC2),
+             size = 3,
+             color = "black") +
+  
+  geom_text(data = scores,
+            aes(PC1, PC2, label = month),
+            vjust = -1) +
+  
+  geom_segment(data = top_loadings,
+               aes(x = 0, y = 0,
+                   xend = PC1s, yend = PC2s),
+               arrow = arrow(length = unit(0.25, "cm")),
+               color = "red",
+               linewidth = 0.8) +
+  
+  geom_text_repel(data = top_loadings,
+                  aes(x = PC1s, y = PC2s, label = var),
+                  color = "blue",
+                  size = 3,
+                  max.overlaps = 20) +
+  
   labs(
-    title = "Amino Acid PCA",
+    title = "PCA",
     x = paste0("PC1 (", var_exp[1], "%)"),
     y = paste0("PC2 (", var_exp[2], "%)")
   ) +
-  theme_classic()
+  
+  theme_classic(base_size = 14) +
+  theme(plot.title = element_text(hjust = 0.5))
+
 
 save_fig("aa_pca.png", p)
 
@@ -271,11 +319,13 @@ mat_scaled[is.infinite(mat_scaled)] <- 0
 pheatmap(mat_scaled,
          filename=file.path(fig_dir,"mineral_heatmap.png"))
 
+library(ggrepel)
+
 # -------------------------
-# PCA (FIXED — BIPLOT)
+# PCA (CLEAN BIPLOT)
 # -------------------------
 
-pca <- prcomp(mat_scaled, scale. = FALSE)
+pca <- prcomp(mat_scaled)   # or aa_scaled in AA section
 
 scores <- as.data.frame(pca$x)
 scores$month <- rownames(scores)
@@ -283,24 +333,70 @@ scores$month <- rownames(scores)
 loadings <- as.data.frame(pca$rotation)
 loadings$var <- rownames(loadings)
 
+# variance explained
 var_exp <- round(100 * summary(pca)$importance[2, 1:2], 1)
 
+# -------------------------
+# SMART ARROW SCALING
+# -------------------------
+
+arrow_scale <- min(
+  (max(scores$PC1) - min(scores$PC1)) /
+    (max(loadings$PC1) - min(loadings$PC1)),
+  (max(scores$PC2) - min(scores$PC2)) /
+    (max(loadings$PC2) - min(loadings$PC2))
+) * 0.7
+
+loadings$PC1s <- loadings$PC1 * arrow_scale
+loadings$PC2s <- loadings$PC2 * arrow_scale
+
+# -------------------------
+# FILTER TOP VARIABLES (REDUCES CLUTTER)
+# -------------------------
+
+loadings$importance <- abs(loadings$PC1) + abs(loadings$PC2)
+
+top_loadings <- loadings %>%
+  arrange(desc(importance)) %>%
+  slice(1:8)   # adjust (6–10 is sweet spot)
+
+# -------------------------
+# PLOT
+# -------------------------
+
 p <- ggplot() +
-  geom_point(data = scores, aes(PC1, PC2), size = 3) +
-  geom_text(data = scores, aes(PC1, PC2, label = month), vjust = -1) +
-  geom_segment(data = loadings,
-               aes(x = 0, y = 0, xend = PC1*3, yend = PC2*3),
-               arrow = arrow(length = unit(0.2,"cm")),
-               color = "red") +
-  geom_text(data = loadings,
-            aes(PC1*3, PC2*3, label = var),
-            color = "blue", size = 3) +
+  
+  geom_point(data = scores,
+             aes(PC1, PC2),
+             size = 3,
+             color = "black") +
+  
+  geom_text(data = scores,
+            aes(PC1, PC2, label = month),
+            vjust = -1) +
+  
+  geom_segment(data = top_loadings,
+               aes(x = 0, y = 0,
+                   xend = PC1s, yend = PC2s),
+               arrow = arrow(length = unit(0.25, "cm")),
+               color = "red",
+               linewidth = 0.8) +
+  
+  geom_text_repel(data = top_loadings,
+                  aes(x = PC1s, y = PC2s, label = var),
+                  color = "blue",
+                  size = 3,
+                  max.overlaps = 20) +
+  
   labs(
-    title = "Mineral PCA",
+    title = "PCA",
     x = paste0("PC1 (", var_exp[1], "%)"),
     y = paste0("PC2 (", var_exp[2], "%)")
   ) +
-  theme_classic()
+  
+  theme_classic(base_size = 14) +
+  theme(plot.title = element_text(hjust = 0.5))
+
 
 save_fig("mineral_pca.png", p)
 
