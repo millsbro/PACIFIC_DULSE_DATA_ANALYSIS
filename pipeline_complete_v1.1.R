@@ -620,42 +620,57 @@ print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
 
 
 # ============================================================
-# SECTION 11 — FAA vs C:N (FINAL)
+# SECTION 11 — TOTAL AA vs C:N (FINAL — WORKING)
 # ============================================================
 
+# -------------------------
+# IDENTIFY AA COLUMNS
+# -------------------------
+
+aa_cols <- names(data)[grepl("_mgkg$", names(data))]
+
+# -------------------------
+# CALCULATE TOTAL AA
+# -------------------------
+
+total_aa <- rowSums(data[, aa_cols], na.rm = TRUE)
+
+# -------------------------
+# BUILD DATASET
+# -------------------------
+
 plot_df <- data.frame(
-  faa = corr_numeric$faa,
-  cn  = corr_numeric$cn
+  total_aa = total_aa,
+  cn       = data$cn_ratio
 )
 
-plot_df <- plot_df[complete.cases(plot_df), ]
+# -------------------------
+# REMOVE NA (SAFETY)
+# -------------------------
 
-test <- cor.test(plot_df$faa, plot_df$cn)
+plot_df <- na.omit(plot_df)
 
-r_val <- round(test$estimate, 2)
-p_val <- signif(test$p.value, 2)
+# -------------------------
+# PLOT
+# -------------------------
 
-label_text <- paste0("r = ", r_val, "\n", "p = ", p_val)
-
-p <- ggplot(plot_df, aes(x = cn, y = faa)) +
+p <- ggplot(plot_df, aes(x = cn, y = total_aa)) +
   geom_point(size = 3) +
-  geom_smooth(method = "lm", se = TRUE) +
-  labs(title = "FAA vs C:N",
-       x = "C:N ratio",
-       y = "Free Amino Acids (mg/kg)") +
-  annotate("text",
-           x = max(plot_df$cn, na.rm = TRUE),
-           y = max(plot_df$faa, na.rm = TRUE),
-           label = label_text,
-           hjust = 1,
-           vjust = 1,
-           size = 5) +
-  theme_classic(base_size = 14) +
-  theme(plot.title = element_text(hjust = 0.5))
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_classic() +
+  labs(
+    title = "Total Amino Acids vs C:N Ratio",
+    x = "C:N Ratio",
+    y = "Total Amino Acids (mg/kg)"
+  )
 
-save_fig("faa_vs_cn_final.png", p)
+save_fig("totalAA_vs_cn.png", p)
 
-cat("\nPIPELINE COMPLETE v1.0\n")
+# -------------------------
+# CORRELATION
+# -------------------------
+
+print(cor.test(plot_df$total_aa, plot_df$cn))
 
 
 # ============================================================
