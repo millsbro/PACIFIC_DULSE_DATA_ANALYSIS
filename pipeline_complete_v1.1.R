@@ -528,14 +528,14 @@ pheatmap(
 
 
 # ============================================================
-# SECTION 10 — PEARSON CORRELATION (FINAL + SULF POLY)
+# SECTION 10 — PEARSON CORRELATION (FULL SYSTEM COMPLETE)
 # ============================================================
 
 # -------------------------
-# COMBINE ALL NUMERIC DATA
+# BASE (ABIOTIC + N + MACROS)
 # -------------------------
 
-corr_data <- data %>%
+corr_base <- data %>%
   select(
     month,
     temp_c,
@@ -545,27 +545,61 @@ corr_data <- data %>%
     par_mol_photons_m2,
     cn,
     total_mgkg,
-    faa
-  ) %>%
-  left_join(
-    bio %>%
-      select(month,
-             phenolics_mg100g,
-             tac_mmolkg,
-             carotenoids_mg100g,
-             phycoerytherin_g100g,
-             vitamin_e_mg100g,
-             k1_ug100g,
-             sulfated_polysaccharides_mggdw),
-    by = "month"
+    faa,
+    protein_pct,
+    lipid_pct,
+    ash_pct,
+    moisture_pct
   )
 
 # -------------------------
-# KEEP NUMERIC ONLY
+# BIOACTIVES (INCLUDING SULF POLY)
+# -------------------------
+
+corr_bio <- bio %>%
+  select(
+    month,
+    phenolics_mg100g,
+    tac_mmolkg,
+    carotenoids_mg100g,
+    phycoerytherin_g100g,
+    vitamin_e_mg100g,
+    k1_ug100g,
+    sulfated_polysaccharides_mggdw
+  )
+
+# -------------------------
+# MINERALS (MACRO + TRACE)
+# -------------------------
+
+corr_min <- mineral %>%
+  select(where(is.numeric), month)
+
+# -------------------------
+# AMINO ACID PCA (PC1)
+# -------------------------
+
+aa_scores <- as.data.frame(pca$x)
+aa_scores$month <- rownames(aa_scores)
+
+aa_scores <- aa_scores %>%
+  select(month, aa_pc1 = PC1)
+
+# -------------------------
+# MERGE ALL DATASETS
+# -------------------------
+
+corr_data <- corr_base %>%
+  left_join(corr_bio, by = "month") %>%
+  left_join(corr_min, by = "month") %>%
+  left_join(aa_scores, by = "month")
+
+# -------------------------
+# NUMERIC ONLY
 # -------------------------
 
 corr_numeric <- corr_data %>%
-  select(-month)
+  select(where(is.numeric))
 
 # -------------------------
 # CORRELATION MATRIX
@@ -580,16 +614,16 @@ corr_matrix <- cor(corr_numeric, use = "pairwise.complete.obs")
 pheatmap(
   corr_matrix,
   filename = file.path(fig_dir, "pearson_heatmap.png"),
-  main = "Pearson Correlation Matrix",
+  main = "Pearson Correlation Matrix (Full System)",
   clustering_distance_rows = "euclidean",
   clustering_distance_cols = "euclidean"
 )
 
 # -------------------------
-# TARGET TESTS (KEY LINKS)
+# TARGET TESTS
 # -------------------------
 
-# FAA vs C:N (your core hypothesis)
+# Core hypothesis
 print(cor.test(corr_numeric$faa, corr_numeric$cn))
 
 # Sulf poly vs antioxidants
@@ -599,12 +633,22 @@ print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
                corr_numeric$tac_mmolkg))
 
-# Sulf poly vs nitrogen status
+# Sulf poly vs nitrogen system
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
                corr_numeric$faa))
 
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
                corr_numeric$cn))
+
+print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
+               corr_numeric$aa_pc1))
+
+# Sulf poly vs macronutrients
+print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
+               corr_numeric$protein_pct))
+
+print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
+               corr_numeric$lipid_pct))
 
 # Sulf poly vs environment
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
