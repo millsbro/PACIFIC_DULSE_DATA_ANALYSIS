@@ -528,11 +528,11 @@ pheatmap(
 
 
 # ============================================================
-# SECTION 10 — PEARSON CORRELATION (FULL SYSTEM COMPLETE)
+# SECTION 10 — PEARSON CORRELATION (FULL SYSTEM — CLEAN)
 # ============================================================
 
 # -------------------------
-# BASE (ABIOTIC + N + MACROS)
+# BASE DATA (ABIOTIC + MACRO + N)
 # -------------------------
 
 corr_base <- data %>%
@@ -540,16 +540,15 @@ corr_base <- data %>%
     month,
     temp_c,
     salinity_ppt,
-    ph,
     do_mgl,
     par_mol_photons_m2,
-    cn,
-    total_mgkg,
-    faa,
-    protein_pct,
-    lipid_pct,
-    ash_pct,
-    moisture_pct
+    ph,
+    cn_ratio,
+    protein_.,
+    lipid_.,
+    carb_.,
+    ash_.,
+    moisture_.
   )
 
 # -------------------------
@@ -569,13 +568,6 @@ corr_bio <- bio %>%
   )
 
 # -------------------------
-# MINERALS (MACRO + TRACE)
-# -------------------------
-
-corr_min <- mineral %>%
-  select(where(is.numeric), month)
-
-# -------------------------
 # AMINO ACID PCA (PC1)
 # -------------------------
 
@@ -586,12 +578,11 @@ aa_scores <- aa_scores %>%
   select(month, aa_pc1 = PC1)
 
 # -------------------------
-# MERGE ALL DATASETS
+# MERGE EVERYTHING
 # -------------------------
 
 corr_data <- corr_base %>%
   left_join(corr_bio, by = "month") %>%
-  left_join(corr_min, by = "month") %>%
   left_join(aa_scores, by = "month")
 
 # -------------------------
@@ -624,7 +615,7 @@ pheatmap(
 # -------------------------
 
 # Core hypothesis
-print(cor.test(corr_numeric$faa, corr_numeric$cn))
+print(cor.test(corr_numeric$cn_ratio, corr_numeric$protein_.))
 
 # Sulf poly vs antioxidants
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
@@ -633,22 +624,19 @@ print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
                corr_numeric$tac_mmolkg))
 
-# Sulf poly vs nitrogen system
+# Sulf poly vs nitrogen / composition
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$faa))
-
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$cn))
+               corr_numeric$cn_ratio))
 
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
                corr_numeric$aa_pc1))
 
 # Sulf poly vs macronutrients
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$protein_pct))
+               corr_numeric$protein_.))
 
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$lipid_pct))
+               corr_numeric$lipid_.))
 
 # Sulf poly vs environment
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
