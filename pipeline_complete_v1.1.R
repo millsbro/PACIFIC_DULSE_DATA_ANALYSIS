@@ -528,7 +528,7 @@ pheatmap(
 
 
 # ============================================================
-# SECTION 10 — PEARSON CORRELATION (FULL SYSTEM — CLEAN)
+# SECTION 10 — PEARSON CORRELATION (FULL SYSTEM — STABLE)
 # ============================================================
 
 # -------------------------
@@ -593,13 +593,19 @@ corr_numeric <- corr_data %>%
   select(where(is.numeric))
 
 # -------------------------
+# REMOVE ZERO-VARIANCE COLUMNS (CRITICAL FIX)
+# -------------------------
+
+corr_numeric <- corr_numeric[, apply(corr_numeric, 2, sd, na.rm = TRUE) != 0]
+
+# -------------------------
 # CORRELATION MATRIX
 # -------------------------
 
 corr_matrix <- cor(corr_numeric, use = "pairwise.complete.obs")
 
 # -------------------------
-# HEATMAP
+# HEATMAP (NOW SAFE)
 # -------------------------
 
 pheatmap(
@@ -614,36 +620,20 @@ pheatmap(
 # TARGET TESTS
 # -------------------------
 
-# Core hypothesis
-print(cor.test(corr_numeric$cn_ratio, corr_numeric$protein_.))
-
-# Sulf poly vs antioxidants
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
                corr_numeric$phenolics_mg100g))
 
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
                corr_numeric$tac_mmolkg))
 
-# Sulf poly vs nitrogen / composition
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
                corr_numeric$cn_ratio))
 
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
                corr_numeric$aa_pc1))
 
-# Sulf poly vs macronutrients
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
                corr_numeric$protein_.))
-
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$lipid_.))
-
-# Sulf poly vs environment
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$temp_c))
-
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$par_mol_photons_m2))
 
 
 # ============================================================
