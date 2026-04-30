@@ -11,6 +11,8 @@ library(tibble)
 # SECTION 1 — USER INPUT + DATA LOAD
 mode <- "monthly"
 
+#mode<- "seasonal"
+
 if(mode == "monthly"){
   data <- read.csv("MONTHLY.csv")
 } else if(mode == "seasonal"){
