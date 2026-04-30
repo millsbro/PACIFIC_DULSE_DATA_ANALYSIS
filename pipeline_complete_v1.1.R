@@ -528,7 +528,7 @@ pheatmap(
 
 
 # ============================================================
-# SECTION 10 — PEARSON CORRELATION (FULL SYSTEM — STABLE)
+# SECTION 10 — PEARSON CORRELATION (FINAL STABLE VERSION)
 # ============================================================
 
 # -------------------------
@@ -593,19 +593,23 @@ corr_numeric <- corr_data %>%
   select(where(is.numeric))
 
 # -------------------------
-# REMOVE ZERO-VARIANCE COLUMNS (CRITICAL FIX)
+# REMOVE ZERO-VARIANCE COLUMNS (FIXED)
 # -------------------------
 
-corr_numeric <- corr_numeric[, apply(corr_numeric, 2, sd, na.rm = TRUE) != 0]
+corr_matrix_tmp <- as.matrix(corr_numeric)
+
+valid_cols <- apply(corr_matrix_tmp, 2, function(x) sd(x, na.rm = TRUE) > 0)
+
+corr_matrix_tmp <- corr_matrix_tmp[, valid_cols]
 
 # -------------------------
 # CORRELATION MATRIX
 # -------------------------
 
-corr_matrix <- cor(corr_numeric, use = "pairwise.complete.obs")
+corr_matrix <- cor(corr_matrix_tmp, use = "pairwise.complete.obs")
 
 # -------------------------
-# HEATMAP (NOW SAFE)
+# HEATMAP
 # -------------------------
 
 pheatmap(
@@ -620,20 +624,20 @@ pheatmap(
 # TARGET TESTS
 # -------------------------
 
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$phenolics_mg100g))
+print(cor.test(corr_matrix_tmp[,"sulfated_polysaccharides_mggdw"],
+               corr_matrix_tmp[,"phenolics_mg100g"]))
 
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$tac_mmolkg))
+print(cor.test(corr_matrix_tmp[,"sulfated_polysaccharides_mggdw"],
+               corr_matrix_tmp[,"tac_mmolkg"]))
 
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$cn_ratio))
+print(cor.test(corr_matrix_tmp[,"sulfated_polysaccharides_mggdw"],
+               corr_matrix_tmp[,"cn_ratio"]))
 
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$aa_pc1))
+print(cor.test(corr_matrix_tmp[,"sulfated_polysaccharides_mggdw"],
+               corr_matrix_tmp[,"aa_pc1"]))
 
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$protein_.))
+print(cor.test(corr_matrix_tmp[,"sulfated_polysaccharides_mggdw"],
+               corr_matrix_tmp[,"protein_."]))
 
 
 # ============================================================
