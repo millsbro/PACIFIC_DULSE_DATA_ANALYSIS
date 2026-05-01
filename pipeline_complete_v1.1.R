@@ -59,6 +59,7 @@ library(ggrepel)
 
 # Toggle between datasets
 mode <- "monthly"
+#mode<- "seasonal"
 
 # Load datasets
 data <- read.csv(ifelse(mode=="monthly","MONTHLY.csv","SEASONAL.csv"))
