@@ -823,4 +823,4 @@ print(cor_res)
 
 
 
-cat("\nPIPELINE COMPLETE v1.1\n")
+cat("\nPIPELINE COMPLETE v2.0\n")
