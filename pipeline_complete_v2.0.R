@@ -723,6 +723,14 @@ corr_numeric <- corr_data %>%
 
 corr_matrix <- cor(corr_numeric, use = "pairwise.complete.obs")
 
+print(round(corr_matrix, 3))
+
+write.csv(
+  corr_matrix,
+  file.path(fig_dir, "pearson_correlation_matrix.csv"),
+  row.names = TRUE
+)
+
 # -------------------------
 # HEATMAP 
 # -------------------------
