@@ -554,7 +554,6 @@ save_fig("mineral_timeseries.png", p)
 # SECTION 9 — BIOACTIVES 
 # ============================================================
 
-bio <- read.csv("bioactives_raw.csv")
 bio <- clean_names(bio)
 
 bio$month <- factor(bio$month, levels = month_levels)
