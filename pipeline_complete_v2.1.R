@@ -19,8 +19,16 @@
 # !!! USER INPUT REQUIRED !!!
 # SELECT DATA MODE BEFORE RUNNING SCRIPT
 # ============================================================
-mode <- "monthly"   # OPTIONS: "monthly" or "seasonal"
-#mode<- "seasonal"
+cat("\nSELECT DATA MODE:\n")
+cat("1: Monthly\n")
+cat("2: Seasonal\n")
+
+choice <- readline(prompt = "Enter 1 or 2: ")
+
+mode <- ifelse(choice == "2", "seasonal", "monthly")
+
+cat(paste0("\nRunning in ", toupper(mode), " mode\n\n"))
+"
 
 
 # ============================================================
