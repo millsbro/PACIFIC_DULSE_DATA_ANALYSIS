@@ -60,18 +60,38 @@ library(grid)       # plotting controls
 library(ggrepel)    # plotting controls
 
 
+
+
+
+
 # ============================================================
 # SECTION 1 — LOAD DATA
 # ============================================================
 
-data <- read.csv(ifelse(mode=="monthly","MONTHLY.csv","SEASONAL.csv"))
-faa_cn <- read.csv("faa_cn_raw.csv")
-minerals <- read.csv("minerals_raw.csv")
+# -------------------------
+# LOAD DATASETS 
+# -------------------------
 
+data <- read.csv(ifelse(mode=="monthly","MONTHLY.csv","SEASONAL.csv"))
+
+bio <- read.csv(ifelse(mode=="monthly",
+                       "bioactives_raw.csv",
+                       "bioactives_seasonal.csv"))
+
+minerals <- read.csv(ifelse(mode=="monthly",
+                            "minerals_raw.csv",
+                            "minerals_seasonal.csv"))
+
+faa_cn <- read.csv(ifelse(mode=="monthly",
+                          "faa_cn_raw.csv",
+                          "faa_seasonal.csv"))
+
+trends <- read.csv("trends.csv")
+
+
+# -------------------------
 # CLEAN COLUMN NAMES
-# ============================================================
-# Ensures consistent naming across all datasets
-# Handles %, spaces, slashes, etc.
+# -------------------------
 
 clean_names <- function(df){
   names(df) <- names(df) %>%
@@ -83,19 +103,38 @@ clean_names <- function(df){
   df
 }
 
-data <- clean_names(data)
-faa_cn <- clean_names(faa_cn)
+data     <- clean_names(data)
+bio      <- clean_names(bio)
 minerals <- clean_names(minerals)
+faa_cn   <- clean_names(faa_cn)
+trends   <- clean_names(trends)
 
-# STANDARDIZE MONTH ORDER
-# ============================================================
 
-month_levels <- c("DEC","JAN","FEB","MAR","APR","MAY",
-                  "JUN","JUL","AUG","SEP","OCT","NOV")
+# -------------------------
+# STANDARDIZE TIME FACTOR
+# -------------------------
 
-data$month <- factor(data$month, levels=month_levels)
-faa_cn$month <- factor(faa_cn$month, levels=month_levels)
-minerals$month <- factor(minerals$month, levels=month_levels)
+if(mode == "monthly"){
+
+  month_levels <- c("DEC","JAN","FEB","MAR","APR","MAY",
+                    "JUN","JUL","AUG","SEP","OCT","NOV")
+
+  data$month     <- factor(data$month, levels = month_levels)
+  bio$month      <- factor(bio$month, levels = month_levels)
+  minerals$month <- factor(minerals$month, levels = month_levels)
+  faa_cn$month   <- factor(faa_cn$month, levels = month_levels)
+
+} else {
+
+  season_levels <- c("Winter","Spring","Summer","Fall")
+
+  data$month     <- factor(data$month, levels = season_levels)
+  bio$month      <- factor(bio$month, levels = season_levels)
+  minerals$month <- factor(minerals$month, levels = season_levels)
+  faa_cn$month   <- factor(faa_cn$month, levels = season_levels)
+
+}
+
 
 
 
