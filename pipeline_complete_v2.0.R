@@ -540,7 +540,7 @@ p <- ggplot(mineral_totals, aes(x = month, y = total_mgkg, group = 1)) +
 
 save_fig("mineral_timeseries.png", p)
 
-cat("\nSECTION 8 COMPLETE\n")
+
 
 # ALL PLOTS SAVED TO /figures #
 
@@ -744,9 +744,7 @@ pheatmap(
   na_col = "white"
 )
 
-# -------------------------
-# OPTIONAL: SINGLE SAFE CHECK
-# -------------------------
+cat("\n--- PEARSON TEST: SULFATED POLYSACCHARIDES vs C:N ---\n\n")
 
 print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
                corr_numeric$cn_ratio))
@@ -825,6 +823,8 @@ save_fig("faa_vs_cn_final.png", p)
 # -------------------------
 # PRINT RESULT
 # -------------------------
+
+cat("\n--- PEARSON TEST: TOTAL AA (FAA PROXY) vs C:N ---\n\n")
 
 print(cor_res)
 
