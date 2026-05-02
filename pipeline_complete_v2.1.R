@@ -123,25 +123,19 @@ trends   <- clean_names(trends)
 
 if(mode == "monthly"){
 
-  month_levels <- c("DEC","JAN","FEB","MAR","APR","MAY",
-                    "JUN","JUL","AUG","SEP","OCT","NOV")
-
-  data$month     <- factor(data$month, levels = month_levels)
-  bio$month      <- factor(bio$month, levels = month_levels)
-  minerals$month <- factor(minerals$month, levels = month_levels)
-  faa_cn$month   <- factor(faa_cn$month, levels = month_levels)
+  time_levels <- c("DEC","JAN","FEB","MAR","APR","MAY",
+                   "JUN","JUL","AUG","SEP","OCT","NOV")
 
 } else {
 
-  season_levels <- c("Winter","Spring","Summer","Fall")
-
-  data$month     <- factor(data$month, levels = season_levels)
-  bio$month      <- factor(bio$month, levels = season_levels)
-  minerals$month <- factor(minerals$month, levels = season_levels)
-  faa_cn$month   <- factor(faa_cn$month, levels = season_levels)
+  time_levels <- c("Winter","Spring","Summer","Fall")
 
 }
 
+data$month     <- factor(data$month, levels = time_levels)
+bio$month      <- factor(bio$month, levels = time_levels)
+minerals$month <- factor(minerals$month, levels = time_levels)
+faa_cn$month   <- factor(faa_cn$month, levels = time_levels)
 
 
 
@@ -567,7 +561,7 @@ mineral_totals <- data.frame(
   total_mgkg = rowSums(mineral_numeric, na.rm = TRUE)
 )
 
-mineral_totals$month <- factor(mineral_totals$month, levels = month_levels)
+mineral_totals$month <- factor(mineral_totals$month, levels = time_levels)
 
 p <- ggplot(mineral_totals, aes(x = month, y = total_mgkg, group = 1)) +
   geom_line(color = "black", linewidth = 1) +
@@ -602,7 +596,7 @@ save_fig("mineral_timeseries.png", p)
 
 bio <- clean_names(bio)
 
-bio$month <- factor(bio$month, levels = month_levels)
+bio$month <- factor(bio$month, levels = time_levels)
 
 bio <- bio %>%
   mutate(
