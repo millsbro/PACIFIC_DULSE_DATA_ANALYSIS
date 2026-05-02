@@ -201,6 +201,7 @@ save_fig("macroalgae_trends.png", p)
 
 
 
+
 # ============================================================
 # SECTION 3 — ABIOTIC PLOTS
 # ============================================================
@@ -237,7 +238,8 @@ plot_abiotic(data,"salinity_ppt","Salinity","Salinity","abiotic_sal.png")
 plot_abiotic(data,"do_mgl","DO","Dissolved Oxygen","abiotic_do.png")
 plot_abiotic(data,"ph","pH","pH","abiotic_ph.png")
 
-# ALL PLOTS SAVED TO /figures #
+
+
 
 
 
@@ -265,7 +267,8 @@ p <- ggplot(macro_long, aes(month,value,fill=name))+
 
 save_fig("macros_stacked.png",p)
 
-# ALL PLOTS SAVED TO /figures #
+
+
 
 
 
@@ -363,7 +366,8 @@ p <- ggplot(scores, aes(x = PC1, y = PC2)) +
 
 save_fig("aa_pca.png", p)
 
-# ALL PLOTS SAVED TO /figures #
+
+
 
 
 
@@ -389,7 +393,7 @@ p <- ggplot(df,aes(month,value,fill=name))+
 
 save_fig("aa_eaa_neaa.png",p)
 
-# ALL PLOTS SAVED TO /figures #
+
 
 
 
@@ -416,7 +420,7 @@ p <- ggplot(faa, aes(cn,faa))+
 
 save_fig("faa_vs_cn.png",p)
 
-# ALL PLOTS SAVED TO /figures #
+
 
 
 
@@ -542,8 +546,6 @@ save_fig("mineral_timeseries.png", p)
 
 
 
-# ALL PLOTS SAVED TO /figures #
-
 
 
 
@@ -648,6 +650,9 @@ pheatmap(
   filename = file.path(fig_dir, "bioactives_heatmap.png"),
   main = "Bioactive Compound Profiles (Z-scored)"
 )
+
+
+
 
 
 
@@ -832,3 +837,4 @@ print(cor_res)
 
 
 cat("\nPIPELINE COMPLETE v2.0\n")
+cat("\nALL OUTPUTS SAVED TO /figures\n") 
