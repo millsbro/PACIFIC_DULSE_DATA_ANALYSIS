@@ -875,5 +875,5 @@ print(cor_res)
 
 
 
-cat("\nPIPELINE COMPLETE v2.0\n")
+cat("\nPIPELINE COMPLETE v2.1\n")
 cat("\nALL OUTPUTS SAVED TO /figures\n") 
