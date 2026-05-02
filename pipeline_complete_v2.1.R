@@ -28,7 +28,6 @@ choice <- readline(prompt = "Enter 1 or 2: ")
 mode <- ifelse(choice == "2", "seasonal", "monthly")
 
 cat(paste0("\nRunning in ", toupper(mode), " mode\n\n"))
-"
 
 
 # ============================================================
