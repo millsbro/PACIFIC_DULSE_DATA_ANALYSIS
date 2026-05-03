@@ -767,14 +767,11 @@ corr_bio <- bio %>%
   )
 
 # -------------------------
-# AMINO ACID PCA (PC1)
+# CALL AMINO ACID PCA (PC1)
 # -------------------------
 
-aa_scores <- as.data.frame(pca$x)
-aa_scores$month <- rownames(aa_scores)
-
-aa_scores <- aa_scores %>%
-  select(month, aa_pc1 = PC1)
+aa_scores <- data %>%
+  select(month, aa_pc1)
 
 # -------------------------
 # MERGE EVERYTHING
