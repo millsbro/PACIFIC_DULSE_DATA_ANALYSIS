@@ -902,5 +902,5 @@ print(cor_res)
 
 
 
-cat("\nPIPELINE COMPLETE v2.1\n")
+cat(paste0("\nPIPELINE COMPLETE v2.2 (", toupper(mode), " MODE)\n"))
 cat("\nALL OUTPUTS SAVED TO /figures\n") 
