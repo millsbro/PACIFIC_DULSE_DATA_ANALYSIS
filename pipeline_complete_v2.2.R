@@ -138,6 +138,36 @@ minerals$month <- factor(minerals$month, levels = time_levels)
 faa_cn$month   <- factor(faa_cn$month, levels = time_levels)
 
 
+# ================================
+# FAA PCA (creates aa_pc1)
+# ================================
+
+faa_cols <- c(
+  "glycine_mgkg","glutamine_mg.kg","serine_mgkg","asparagine_mgkg",
+  "glutamicacid_mgkg","asparticacid_mgkg","histidine_mgkg","arginine_mgkg",
+  "lysine_mgkg","cystine_mgkg","tryptophan_mgkg","phenylalanine_mgkg",
+  "leucine_mgkg","isoleucine_mgkg","methionine_mgkg","valine_mgkg",
+  "proline_mgkg","tyrosine_mgkg","cysteine_mgkg","alanine_mgkg",
+  "threonine_mgkg","taurine_mgkg"
+)
+
+faa_data <- data[, faa_cols]
+
+# Remove zero-variance columns
+faa_data <- faa_data[, apply(faa_data, 2, var, na.rm = TRUE) != 0]
+
+# Keep track of complete rows
+complete_idx <- complete.cases(faa_data)
+
+# Scale + PCA
+faa_scaled <- scale(faa_data[complete_idx, ])
+aa_pca <- prcomp(faa_scaled, center = TRUE, scale. = TRUE)
+
+# Initialize + assign PC1
+data$aa_pc1 <- NA
+data$aa_pc1[complete_idx] <- aa_pca$x[,1]
+
+
 
 
 # ============================================================
