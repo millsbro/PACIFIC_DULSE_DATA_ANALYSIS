@@ -639,7 +639,7 @@ bio <- bio %>%
   )
 
 vitamins <- c("vitamin_e_mg100g", "k1_ug100g")
-pigments <- c("carotenoids_mg100g", "phycoerytherin_g100g")
+pigments <- c("carotenoids_mg100g", "phycoerythrin_g100g")
 antiox   <- c("phenolics_mg100g", "tac_mmolkg")
 sulfpoly <- c("sulfated_polysaccharides_mggdw")
 
@@ -657,7 +657,7 @@ bio_scaled[is.na(bio_scaled)] <- 0
 bio_scaled[is.infinite(bio_scaled)] <- 0
 
 bio_scaled_df <- as.data.frame(bio_scaled)
-bio_scaled_df$month <- rownames(bio_scaled_df)
+bio_scaled_df$month <- factor(rownames(bio_scaled_df), levels = time_levels)
 
 plot_group <- function(vars, title){
   df <- bio_scaled_df %>%
@@ -765,7 +765,7 @@ corr_bio <- bio %>%
     phenolics_mg100g,
     tac_mmolkg,
     carotenoids_mg100g,
-    phycoerytherin_g100g,
+    phycoerythrin_g100g,
     vitamin_e_mg100g,
     k1_ug100g,
     sulfated_polysaccharides_mggdw
