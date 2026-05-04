@@ -643,23 +643,10 @@ pigments <- c("carotenoids_mg100g", "phycoerythrin_g100g")
 antiox   <- c("phenolics_mg100g", "tac_mmolkg")
 sulfpoly <- c("sulfated_polysaccharides_mggdw")
 
-bio_numeric <- bio %>%
-  select(month, all_of(c(vitamins, pigments, antiox, sulfpoly)))
-
-bio_mat <- bio_numeric %>%
-  column_to_rownames("month") %>%
-  as.matrix()
-
-bio_mat <- apply(bio_mat, 2, as.numeric)
-
 bio_scaled_df <- bio %>%
   dplyr::select(month, all_of(c(vitamins, pigments, antiox, sulfpoly))) %>%
   mutate(across(-month, scale)) %>%
   as.data.frame()
-
-bio_scaled_df <- as.data.frame(bio_scaled)
-
-bio_scaled_df$month <- bio$month
 
 plot_group <- function(vars, title){
   df <- bio_scaled_df %>%
@@ -722,7 +709,7 @@ dev.off()
 # -------------------------
 
 pheatmap(
-  bio_scaled,
+  bio_scaled_df %>% column_to_rownames("month"),
   filename = file.path(fig_dir, "bioactives_heatmap.png"),
   main = "Bioactive Compound Profiles (Z-scored)"
 )
