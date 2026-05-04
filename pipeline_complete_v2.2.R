@@ -657,7 +657,8 @@ bio_scaled[is.na(bio_scaled)] <- 0
 bio_scaled[is.infinite(bio_scaled)] <- 0
 
 bio_scaled_df <- as.data.frame(bio_scaled)
-bio_scaled_df$month <- factor(rownames(bio_scaled_df), levels = time_levels)
+
+bio_scaled_df$month <- bio$month
 
 plot_group <- function(vars, title){
   df <- bio_scaled_df %>%
