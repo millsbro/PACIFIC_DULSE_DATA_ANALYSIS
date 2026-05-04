@@ -562,7 +562,7 @@ loadings_top_m <- loadings_m %>%
 if(mode == "monthly"){
 
   loadings_plot_m <- loadings_m %>%
-    arrange(desc(importance)) %>%
+    arrange(desc(loadings_m$importance)) %>%
     slice(1:top_n)
 
 } else {
