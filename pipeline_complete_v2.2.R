@@ -407,13 +407,13 @@ top_n=8
 
 if(mode == "monthly"){
 
-  loadings_plot_aa <- loadings_aa %>%
+  loadings_plot_aa <- loadings %>%
     arrange(desc(importance)) %>%
     slice(1:top_n)
 
 } else {
 
-  loadings_plot_aa <- loadings_aa
+  loadings_plot_aa <- loadings
 
 }
 
