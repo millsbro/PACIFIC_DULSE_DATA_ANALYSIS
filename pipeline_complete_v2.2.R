@@ -118,6 +118,17 @@ minerals <- clean_names(minerals)
 faa_cn   <- clean_names(faa_cn)
 trends   <- clean_names(trends)
 
+if(mode == "seasonal"){
+
+  bio$month <- dplyr::case_when(
+    bio$month %in% c("DEC","JAN","FEB") ~ "Winter",
+    bio$month %in% c("MAR","APR","MAY") ~ "Spring",
+    bio$month %in% c("JUN","JUL","AUG") ~ "Summer",
+    bio$month %in% c("SEP","OCT","NOV") ~ "Fall"
+  )
+
+}
+
 
 # -------------------------
 # STANDARDIZE TIME FACTOR
@@ -385,17 +396,26 @@ scores$month <- rownames(scores)
 loadings <- as.data.frame(pca$rotation)
 loadings$var <- rownames(loadings)
 
+loadings_aa <- loadings_aa %>%
+  mutate(importance = abs(PC1) + abs(PC2))
+
 
 # SELECT TOP CONTRIBUTORS
 # -------------------------
 
-top_n <- 8
+top_n=8
 
-loadings$importance <- abs(loadings$PC1) + abs(loadings$PC2)
+if(mode == "monthly"){
 
-loadings_top <- loadings %>%
+  loadings_plot_aa <- loadings_aa %>%
     arrange(desc(importance)) %>%
     slice(1:top_n)
+
+} else {
+
+  loadings_plot_aa <- loadings_aa
+
+}
 
 
 # SCALE ARROWS
@@ -412,7 +432,7 @@ p <- ggplot(scores, aes(x = PC1, y = PC2)) +
     geom_text_repel(aes(label = month), size = 4) +
 
     geom_segment(
-        data = loadings_top,
+        data = loadings_plot_aa,
         aes(x = 0, y = 0,
             xend = PC1 * arrow_scale,
             yend = PC2 * arrow_scale),
@@ -421,7 +441,7 @@ p <- ggplot(scores, aes(x = PC1, y = PC2)) +
     ) +
 
     geom_text_repel(
-        data = loadings_top,
+        data = loadings_plot_aa,
         aes(x = PC1 * arrow_scale,
             y = PC2 * arrow_scale,
             label = var),
@@ -533,13 +553,23 @@ loadings_m$var <- rownames(loadings_m)
 # SELECT TOP CONTRIBUTORS
 # -------------------------
 
-top_n <- 8
-
-loadings_m$importance <- abs(loadings_m$PC1) + abs(loadings_m$PC2)
+top_n=8
 
 loadings_top_m <- loadings_m %>%
+  arrange(desc(importance)) %>%
+  slice(1:top_n)
+
+if(mode == "monthly"){
+
+  loadings_plot_m <- loadings_m %>%
     arrange(desc(importance)) %>%
     slice(1:top_n)
+
+} else {
+
+  loadings_plot_m <- loadings_m
+
+}
 
 
 # SCALE ARROWS
@@ -556,7 +586,7 @@ p_m <- ggplot(scores_m, aes(x = PC1, y = PC2)) +
     geom_text_repel(aes(label = month), size = 4) +
 
     geom_segment(
-        data = loadings_top_m,
+        data = loadings_plot_m,
         aes(x = 0, y = 0,
             xend = PC1 * arrow_scale,
             yend = PC2 * arrow_scale),
@@ -565,7 +595,7 @@ p_m <- ggplot(scores_m, aes(x = PC1, y = PC2)) +
     ) +
 
     geom_text_repel(
-        data = loadings_top_m,
+        data = loadings_plot_m,
         aes(x = PC1 * arrow_scale,
             y = PC2 * arrow_scale,
             label = var),
@@ -819,8 +849,16 @@ pheatmap(
 
 cat("\n--- PEARSON TEST: SULFATED POLYSACCHARIDES vs C:N ---\n\n")
 
-print(cor.test(corr_numeric$sulfated_polysaccharides_mggdw,
-               corr_numeric$cn_ratio))
+x <- corr_numeric$sulfated_polysaccharides_mggdw
+y <- corr_numeric$cn_ratio
+
+valid <- is.finite(x) & is.finite(y)
+
+if(sum(valid) >= 3){
+  print(cor.test(x[valid], y[valid]))
+} else {
+  message("Pearson test skipped: not enough valid points")
+}
 
 
 
