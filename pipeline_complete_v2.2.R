@@ -396,7 +396,7 @@ scores$month <- rownames(scores)
 loadings <- as.data.frame(pca$rotation)
 loadings$var <- rownames(loadings)
 
-loadings_aa <- loadings_aa %>%
+loadings_aa <- loadings %>%
   mutate(importance = abs(PC1) + abs(PC2))
 
 
