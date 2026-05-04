@@ -553,21 +553,20 @@ loadings_m$var <- rownames(loadings_m)
 # SELECT TOP CONTRIBUTORS
 # -------------------------
 
-top_n=8
+top_n <- 8
 
-loadings_top_m <- loadings_m %>%
-  arrange(desc(importance)) %>%
-  slice(1:top_n)
+loadings_m <- loadings_m %>%
+  mutate(importance = abs(PC1) + abs(PC2))
 
 if(mode == "monthly"){
 
-  loadings_plot_m <- loadings_m %>%
-    arrange(desc(loadings_m$importance)) %>%
+  loadings_top_m <- loadings_m %>%
+    arrange(desc(importance)) %>%
     slice(1:top_n)
 
 } else {
 
-  loadings_plot_m <- loadings_m
+  loadings_top_m <- loadings_m
 
 }
 
