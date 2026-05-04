@@ -566,7 +566,7 @@ loadings_plot_m <- loadings_m %>%
 
 } else {
 
-  loadings_top_m <- loadings_m
+  loadings_plot_m <- loadings_m
 
 }
 
