@@ -357,7 +357,8 @@ aa <- data %>%
   column_to_rownames("month") %>%
   as.matrix()
 
-aa <- apply(aa,2,as.numeric)
+aa <- as.matrix(aa)
+storage.mode(aa) <- "numeric"
 
 scale_safe <- function(x){
   s <- sd(x, na.rm=TRUE)
@@ -506,7 +507,8 @@ mat <- minerals %>%
   column_to_rownames("month") %>%
   as.matrix()
 
-mat <- apply(mat,2,as.numeric)
+mat <- as.matrix(mat)
+storage.mode(mat) <- "numeric"
 
 mat_scaled <- apply(mat,2,scale_safe)
 mat_scaled[is.na(mat_scaled)] <- 0
