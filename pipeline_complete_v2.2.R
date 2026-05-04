@@ -708,8 +708,14 @@ dev.off()
 # HEATMAP 
 # -------------------------
 
+mat <- bio_scaled_df %>%
+  select(-month) %>%
+  as.matrix()
+
+rownames(mat) <- paste0(bio_scaled_df$month, "_", seq_len(nrow(mat)))
+
 pheatmap(
-  bio_scaled_df %>% column_to_rownames("month"),
+  mat,
   filename = file.path(fig_dir, "bioactives_heatmap.png"),
   main = "Bioactive Compound Profiles (Z-scored)"
 )
