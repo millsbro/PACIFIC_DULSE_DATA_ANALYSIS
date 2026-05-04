@@ -27,6 +27,8 @@ choice <- readline(prompt = "Enter 1 or 2: ")
 
 mode <- ifelse(choice == "2", "seasonal", "monthly")
 
+method_choice <- if (mode == "seasonal") "lm" else "loess"
+
 cat(paste0("\nRunning in ", toupper(mode), " mode\n\n"))
 
 
@@ -229,7 +231,7 @@ trends_long <- trends_yearly %>%
 
 p <- ggplot(trends_long, aes(x = year, y = interest, color = sector)) +
   
-  geom_smooth(method = "loess", se = FALSE, linewidth = 1.5, span = 0.4) +
+geom_smooth(method = method_choice, se = FALSE, linewidth = 1.5)
   
   scale_color_manual(
     values = c(
@@ -286,8 +288,8 @@ plot_abiotic <- function(df, var, ylab, title, fname){
 
   # Build plot
   p <- ggplot(df, aes(month, .data[[var]], group=1))+
-    geom_line(color="black")+
-    geom_point(aes(color=group), size=3)+
+    geom_line(color="black", na.rm = TRUE)+
+    geom_point(aes(color=group), size=3, na.rm = TRUE)+
     geom_hline(yintercept=m, linetype="dashed")+
     scale_color_manual(values=c("red","blue"))+
     labs(title=title, y=ylab, x="Month")+
@@ -596,7 +598,7 @@ mineral_totals$month <- factor(mineral_totals$month, levels = time_levels)
 p <- ggplot(mineral_totals, aes(x = month, y = total_mgkg, group = 1)) +
   geom_line(color = "black", linewidth = 1) +
   geom_point(size = 3, color = "black") +
-  geom_smooth(method = "loess", se = FALSE, color = "red", linewidth = 1.2) +
+ geom_smooth(method = method_choice, se = FALSE, color = "red", linewidth = 1.2)) +
   labs(
     title = "Total Mineral Content",
     x = "Month",
