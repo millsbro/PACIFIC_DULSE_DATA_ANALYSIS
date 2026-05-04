@@ -631,6 +631,9 @@ bio <- clean_names(bio)
 bio$month <- factor(bio$month, levels = time_levels)
 
 bio <- bio %>%
+  arrange(month)
+
+bio <- bio %>%
   mutate(
     vitamin_e_mg100g = alpha_t_mg100g + gamma_t_mg100g
   )
