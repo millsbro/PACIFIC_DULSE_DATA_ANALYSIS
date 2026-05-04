@@ -598,7 +598,7 @@ mineral_totals$month <- factor(mineral_totals$month, levels = time_levels)
 p <- ggplot(mineral_totals, aes(x = month, y = total_mgkg, group = 1)) +
   geom_line(color = "black", linewidth = 1) +
   geom_point(size = 3, color = "black") +
- geom_smooth(method = method_choice, se = FALSE, color = "red", linewidth = 1.2) +
+  geom_smooth(method = method_choice, se = FALSE, color = "red", linewidth = 1.2) +
   labs(
     title = "Total Mineral Content",
     x = "Month",
