@@ -231,7 +231,7 @@ trends_long <- trends_yearly %>%
 
 p <- ggplot(trends_long, aes(x = year, y = interest, color = sector)) +
   
-geom_smooth(method = method_choice, se = FALSE, linewidth = 1.5)
+geom_smooth(method = method_choice, se = FALSE, linewidth = 1.5) +
   
   scale_color_manual(
     values = c(
