@@ -652,9 +652,10 @@ bio_mat <- bio_numeric %>%
 
 bio_mat <- apply(bio_mat, 2, as.numeric)
 
-bio_scaled <- apply(bio_mat, 2, scale_safe)
-bio_scaled[is.na(bio_scaled)] <- 0
-bio_scaled[is.infinite(bio_scaled)] <- 0
+bio_scaled_df <- bio %>%
+  dplyr::select(month, all_of(c(vitamins, pigments, antiox, sulfpoly))) %>%
+  mutate(across(-month, scale)) %>%
+  as.data.frame()
 
 bio_scaled_df <- as.data.frame(bio_scaled)
 
