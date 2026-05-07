@@ -372,7 +372,7 @@ save_fig("macros_stacked.png",p)
 # ============================================================
 
 aa_matrix <- aa %>%
-  select(-sample_id) %>%
+  select(-any_of("sample_id")) %>%
   column_to_rownames("month") %>%
   as.matrix()
 
