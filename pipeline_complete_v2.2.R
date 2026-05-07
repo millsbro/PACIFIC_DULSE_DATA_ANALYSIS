@@ -119,6 +119,7 @@ clean_names <- function(df){
 data     <- clean_names(data)
 bio      <- clean_names(bio)
 minerals <- clean_names(minerals)
+aa       <- clean_names(aa)
 faa_cn   <- clean_names(faa_cn)
 trends   <- clean_names(trends)
 
