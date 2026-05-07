@@ -436,7 +436,7 @@ p <- ggplot(scores, aes(x = PC1, y = PC2)) +
     geom_point(size = 3, color = "black") +
     geom_text_repel(aes(label = month),
                 size = 4,
-                max.overlaps = 20)
+                max.overlaps = 20) +
 
     geom_segment(
         data = loadings_plot_aa,
