@@ -93,7 +93,7 @@ minerals <- read.csv(ifelse(mode=="monthly",
 
 aa <- read.csv(ifelse(mode=="monthly,
                            "aa_raw.csv",
-                           "aa_seasonal.csv))
+                           "aa_seasonal.csv"))
 
 faa_cn <- read.csv(ifelse(mode=="monthly",
                           "faa_cn_raw.csv",
