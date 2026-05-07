@@ -67,7 +67,7 @@ library(tibble)     # rownames handling
 library(stringr)    # pattern detection
 library(grid)       # plotting controls
 library(ggrepel)    # plotting controls
-
+library(janitor)    # ensures continuity
 
 
 
