@@ -452,7 +452,7 @@ p <- ggplot(scores, aes(x = PC1, y = PC2)) +
             y = PC2 * arrow_scale,
             label = var),
         color = "blue",
-        size = 4
+        size = 4,
         max.overlaps = 20) +
 
     theme_minimal() +
