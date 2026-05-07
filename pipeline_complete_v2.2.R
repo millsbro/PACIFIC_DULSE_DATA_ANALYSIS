@@ -414,11 +414,14 @@ loadings_aa <- loadings %>%
 if(mode == "monthly"){
 
   loadings_plot_aa <- loadings_aa %>%
-    filter(importance > 0.7)
+    arrange(desc(importance)) %>%
+    slice(1:10)
 
 } else {
 
-  loadings_plot_aa <- loadings_aa
+  loadings_plot_aa <- loadings_aa %>%
+    arrange(desc(importance)) %>%
+    slice(1:8)
 
 }
 
