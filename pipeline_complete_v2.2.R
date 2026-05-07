@@ -91,6 +91,10 @@ minerals <- read.csv(ifelse(mode=="monthly",
                             "minerals_raw.csv",
                             "minerals_seasonal.csv"))
 
+aa <- read.csv(ifelse(mode=="monthly,
+                           "aa_raw.csv",
+                           "aa_seasonal.csv))
+
 faa_cn <- read.csv(ifelse(mode=="monthly",
                           "faa_cn_raw.csv",
                           "faa_seasonal.csv"))
@@ -360,16 +364,19 @@ save_fig("macros_stacked.png",p)
 # ============================================================
 # SECTION 5 — AMINO ACIDS 
 # ============================================================
+# aa         = raw AA dataframe
+# aa_matrix  = numeric matrix
+# aa_scaled  = scaled matrix
 
 # HEAT MAP
 # ============================================================
-aa <- data %>%
-  select(month, ends_with("mgkg")) %>%
+
+aa_matrix <- aa %>%
+  select(-sample_id) %>%
   column_to_rownames("month") %>%
   as.matrix()
 
-aa <- as.matrix(aa)
-storage.mode(aa) <- "numeric"
+storage.mode(aa_matrix) <- "numeric"
 
 scale_safe <- function(x){
   s <- sd(x, na.rm=TRUE)
@@ -377,7 +384,7 @@ scale_safe <- function(x){
   (x-mean(x, na.rm=TRUE))/s
 }
 
-aa_scaled <- apply(aa,2,scale_safe)
+aa_scaled <- apply(aa_matrix,2,scale_safe)
 aa_scaled[is.na(aa_scaled)] <- 0
 aa_scaled[is.infinite(aa_scaled)] <- 0
 
@@ -406,8 +413,7 @@ loadings_aa <- loadings %>%
 if(mode == "monthly"){
 
   loadings_plot_aa <- loadings_aa %>%
-    arrange(desc(importance)) %>%
-    filter(importance > 0.55)
+    filter(importance > 0.7)
 
 } else {
 
@@ -427,7 +433,9 @@ arrow_scale <- 3
 
 p <- ggplot(scores, aes(x = PC1, y = PC2)) +
     geom_point(size = 3, color = "black") +
-    geom_text_repel(aes(label = month), size = 4) +
+    geom_text_repel(aes(label = month),
+                size = 4,
+                max.overlaps = 20)
 
     geom_segment(
         data = loadings_plot_aa,
@@ -445,7 +453,7 @@ p <- ggplot(scores, aes(x = PC1, y = PC2)) +
             label = var),
         color = "blue",
         size = 4
-    ) +
+        max.overlaps = 20) +
 
     theme_minimal() +
     labs(
