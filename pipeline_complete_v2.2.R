@@ -403,13 +403,11 @@ loadings_aa <- loadings %>%
 # SELECT TOP CONTRIBUTORS
 # -------------------------
 
-top_n=8
-
 if(mode == "monthly"){
 
   loadings_plot_aa <- loadings_aa %>%
     arrange(desc(importance)) %>%
-    slice(1:top_n)
+    filter(importance > 0.55)
 
 } else {
 
