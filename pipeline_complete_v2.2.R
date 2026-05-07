@@ -481,7 +481,7 @@ eaa <- c("lysine_mgkg","leucine_mgkg","isoleucine_mgkg","valine_mgkg",
          "methionine_mgkg","phenylalanine_mgkg","tryptophan_mgkg","threonine_mgkg")
 
 aa_eaa <- rowSums(data[,eaa], na.rm=TRUE)
-aa_total <- rowSums(aa, na.rm=TRUE)
+aa_total <- rowSums(select(aa, where(is.numeric)), na.rm = TRUE)
 aa_neaa <- aa_total - aa_eaa
 
 df <- data.frame(month=data$month,EAA=aa_eaa,NEAA=aa_neaa) %>%
