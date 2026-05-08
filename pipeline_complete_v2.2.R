@@ -123,17 +123,6 @@ aa       <- clean_names(aa)
 faa_cn   <- clean_names(faa_cn)
 trends   <- clean_names(trends)
 
-if(mode == "seasonal"){
-
-  bio$month <- dplyr::case_when(
-    bio$month %in% c("DEC","JAN","FEB") ~ "Winter",
-    bio$month %in% c("MAR","APR","MAY") ~ "Spring",
-    bio$month %in% c("JUN","JUL","AUG") ~ "Summer",
-    bio$month %in% c("SEP","OCT","NOV") ~ "Fall"
-  )
-
-}
-
 
 # -------------------------
 # STANDARDIZE TIME FACTOR
