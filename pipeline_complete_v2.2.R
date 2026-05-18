@@ -459,6 +459,28 @@ p <- ggplot(scores, aes(x = PC1, y = PC2)) +
 save_fig("aa_pca.png", p)
 
 
+# PEARSON TEST — AA_PC1 vs C:N
+# ============================================================
+
+cat("\n--- PEARSON TEST: AA_PC1 vs C:N ---\n\n")
+
+pc1_cn_df <- data.frame(
+  aa_pc1 = scores$PC1,
+  cn = faa_cn$cn
+)
+
+pc1_cn_df <- pc1_cn_df %>%
+  filter(is.finite(aa_pc1),
+         is.finite(cn))
+
+pc1_cn_cor <- cor.test(
+  pc1_cn_df$aa_pc1,
+  pc1_cn_df$cn
+)
+
+print(pc1_cn_cor)
+
+
 
 
 
