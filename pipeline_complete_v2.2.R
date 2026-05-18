@@ -466,7 +466,7 @@ cat("\n--- PEARSON TEST: AA_PC1 vs C:N ---\n\n")
 
 pc1_cn_df <- data.frame(
   aa_pc1 = scores$PC1,
-  cn = faa_cn$cn
+  cn = faa_cn$c_to_n
 )
 
 pc1_cn_df <- pc1_cn_df %>%
